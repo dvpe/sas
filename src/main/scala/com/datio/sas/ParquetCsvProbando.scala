@@ -2,17 +2,17 @@ package com.datio.sas
 
 import java.io.File
 
-import com.datio.sas.parquet.ParquetWriter
-import com.datio.sas.csv.CsvReader
+import com.datio.sas.csv.CsvWriterProbando
+import com.datio.sas.parquet.ParquetReader
 import com.typesafe.config.ConfigFactory
 import org.apache.spark.{SparkConf, SparkContext, SparkFiles}
 import org.apache.spark.sql.SQLContext
 import org.slf4j.LoggerFactory
 
 /**
-  * Created by dvega on 19/05/17.
+  * Created by davidvegaperez on 24/5/17.
   */
-object CsvParquet {
+object ParquetCsvProbando {
   def main(args: Array[String]): Unit = {
 
     val log = LoggerFactory.getLogger(this.getClass)
@@ -29,10 +29,8 @@ object CsvParquet {
 
     val config = ConfigFactory.load(ConfigFactory.parseFile(new File(configFile)))
 
-    val csvDF = new CsvReader(sqc)(config.getConfig("sas.csv")).read.collect()
-
-
-    new ParquetWriter()(config.getConfig("sas.parquet")).write(csvDF)
+    val parquetDF = new ParquetReader(sqc)(config.getConfig("sas.parquet")).read
+    new CsvWriterProbando(sqc)(config.getConfig("sas.csv")).write(parquetDF)
 
     sc.stop()
   }

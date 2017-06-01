@@ -1,9 +1,10 @@
 package com.datio.sas.parquet
 
 import com.typesafe.config.Config
-import org.apache.spark.sql.{DataFrame, DataFrameReader, SQLContext}
+import org.apache.spark.sql._
 
 import scala.collection.JavaConverters._
+import org.apache.spark.sql.DataFrame
 
 /**
   * Class to write in Avro using spark-avro library and its options.

@@ -34,7 +34,7 @@ class AvroReader(sqc: SQLContext)(implicit config: Config) {
   /**
     * Apply options from configuration to the DataFrame writer.
     *
-    * @param dfw
+    * @param dfr
     * @return
     */
   protected def setOptions(dfr: DataFrameReader): DataFrameReader = {

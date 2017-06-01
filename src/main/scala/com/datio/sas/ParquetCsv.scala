@@ -6,7 +6,7 @@ import com.datio.sas.csv.{CsvReader, CsvWriter}
 import com.datio.sas.parquet.ParquetReader
 import com.typesafe.config.ConfigFactory
 import org.apache.spark.{SparkConf, SparkContext, SparkFiles}
-import org.apache.spark.sql.SQLContext
+import org.apache.spark.sql.SparkSession
 import org.slf4j.LoggerFactory
 
 /**
@@ -19,8 +19,9 @@ object ParquetCsv {
 
     val sparkConf = new SparkConf()
 
-    val sc = new SparkContext(sparkConf)
-    val sqc = new SQLContext(sc)
+    val ss = SparkSession.builder().config(sparkConf).master("local").getOrCreate()
+
+    val sqlc = ss.sqlContext
 
     val configFile = SparkFiles.get("application.conf")
     log.info(s"Path to application.conf is: $configFile")
@@ -29,9 +30,9 @@ object ParquetCsv {
 
     val config = ConfigFactory.load(ConfigFactory.parseFile(new File(configFile)))
 
-    val parquetDF = new ParquetReader(sqc)(config.getConfig("sas.parquet")).read
-    new CsvWriter(sqc)(config.getConfig("sas.csv")).write(parquetDF)
+    val parquetDF = new ParquetReader(sqlc)(config.getConfig("sas.parquet")).read
+    new CsvWriter(ss)(config.getConfig("sas.csv")).write(parquetDF)
 
-    sc.stop()
+    ss.stop()
   }
 }

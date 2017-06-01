@@ -5,7 +5,7 @@ import java.io.File
 import com.datio.sas.avro.AvroReader
 import com.datio.sas.csv.CsvWriter
 import com.typesafe.config.ConfigFactory
-import org.apache.spark.sql.SQLContext
+import org.apache.spark.sql.{SQLContext, SparkSession}
 import org.apache.spark.{SparkConf, SparkContext, SparkFiles}
 import org.slf4j.LoggerFactory
 
@@ -17,8 +17,9 @@ object AvroCsv {
 
     val sparkConf = new SparkConf()
 
-    val sc = new SparkContext(sparkConf)
-    val sqc = new SQLContext(sc)
+    val ss = SparkSession.builder().config(sparkConf).master("local").getOrCreate()
+
+    val sqlc = ss.sqlContext
 
     val configFile = SparkFiles.get("application.conf")
     log.info(s"Path to application.conf is: $configFile")
@@ -27,10 +28,10 @@ object AvroCsv {
 
     val config = ConfigFactory.load(ConfigFactory.parseFile(new File(configFile)))
 
-    val csvDF = new AvroReader(sqc)(config.getConfig("sas.avro")).read
-    new CsvWriter(sqc)(config.getConfig("sas.csv")).write(csvDF)
+    val csvDF = new AvroReader(sqlc)(config.getConfig("sas.avro")).read
+    new CsvWriter(ss)(config.getConfig("sas.csv")).write(csvDF)
 
-    sc.stop()
+    ss.stop()
   }
 
 }

@@ -3,7 +3,7 @@ package com.datio.sas.avro
 import com.databricks.spark.avro._
 import com.datio.sas.avro.AvroWriter._
 import com.typesafe.config.Config
-import org.apache.spark.sql.{DataFrame, DataFrameWriter, SQLContext, SaveMode}
+import org.apache.spark.sql._
 
 import scala.collection.JavaConverters._
 
@@ -27,7 +27,7 @@ class AvroWriter(sqc: SQLContext)(implicit config: Config) {
     *
     * @param df Dataframe you want to write.
     */
-  def write(df: DataFrame): Unit = {
+  def write(df: Dataset<Row>): Unit = {
     val compression = config.getString(OPTION_COMPRESSION_CODEC)
     sqc.setConf(COMPRESSION_CODEC, compression)
     if (compression.equalsIgnoreCase("deflate")) {
@@ -42,7 +42,7 @@ class AvroWriter(sqc: SQLContext)(implicit config: Config) {
     }
 
     val path = config.getString("path")
-    setOptions(df.write).mode(savemode).avro(path)
+    setOptions(df).mode(savemode).avro(path)
   }
 
   /**
@@ -51,7 +51,7 @@ class AvroWriter(sqc: SQLContext)(implicit config: Config) {
     * @param dfw
     * @return
     */
-  protected def setOptions(dfw: DataFrameWriter): DataFrameWriter = {
+  protected def setOptions(dfw: Dataset): DataFrameWriter = {
     val optionsConfig = config.getConfig(OPTIONS_SUBCONFIG)
 
     // DataFrameWriter After partitioning

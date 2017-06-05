@@ -33,6 +33,9 @@ sas {
 4. Si escribías a HDFS todo iba bien pero al cambiarlo a file:...fallaba por el error: Exception in thread "main" java.io.IOException: Can't get Master Kerberos principal for use as renewer
 
 5. Nuestra solución fue compilar la versión de spark 2.1 y lo subimos a nexus:
+#Compilar (desde el commit cd0a08361e2526519e7c131c42116bf56fa62c76)
+./dev/make-distribution.sh --name custom-spark-2.1 --tgz -Dscala-2.11 -DskipTests -Phadoop-2.7 -Pmesos
+#Ruta en nexus
 http://10.48.238.128:8081/repository/maven-snapshots/com/datio/arq/spark/1.0-SNAPSHOT/spark-2.1.0-bin-custom-spark-2.1.tgz
 
 6. Dentro de un container de la 1.4.0 la descargamos y hacemos que el enlace simbólico apunte a ella para utilizar esa versión
